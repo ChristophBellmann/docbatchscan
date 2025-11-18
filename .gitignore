@@ -1,0 +1,18 @@
+# Logs & temp
+*.log
+*.tmp
+*.swp
+*~
+/tmp/
+/*.lock
+
+# System
+.DS_Store
+Thumbs.db
+
+# Build
+*.deb
+*.rpm
+/dist/
+/build/
+
