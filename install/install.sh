@@ -32,20 +32,6 @@ manual_install_from_deb() {
   rm -rf "${tmp}"
 }
 
-can_use_dpkg_path() {
-  # Canon's legacy package depends on "libsane" (old package name).
-  # On modern Ubuntu/Pop!_OS this package is typically not installable.
-  if dpkg-query -W -f='${Status}' libsane 2>/dev/null | grep -q '^install ok installed$'; then
-    return 0
-  fi
-
-  if apt-cache policy libsane 2>/dev/null | grep -q 'Candidate: (none)'; then
-    return 1
-  fi
-
-  return 0
-}
-
 echo "Installiere docbatchscan …"
 
 # 1) Canon-Treiber installieren (falls noch nicht vorhanden)
@@ -90,7 +76,7 @@ if command -v dpkg >/dev/null 2>&1; then
     fi
 
     if [[ -f "${DEB_PKG}" ]]; then
-      if can_use_dpkg_path; then
+      if [[ "${DOCBATCHSCAN_FORCE_DPKG:-0}" == "1" ]]; then
         echo "Installiere Canon-Treiber aus: ${DEB_PKG}"
         if ! dpkg -i "${DEB_PKG}"; then
           echo "dpkg meldet Abhängigkeitsprobleme. Versuche manuellen Fallback …"
@@ -98,7 +84,7 @@ if command -v dpkg >/dev/null 2>&1; then
           manual_install_from_deb "${DEB_PKG}"
         fi
       else
-        echo "Hinweis: Paket 'libsane' nicht verfügbar, nutze direkten Treiber-Fallback ohne dpkg."
+        echo "Nutze direkten Treiber-Fallback (robust auf modernen Ubuntu/Pop!_OS-Systemen)."
         manual_install_from_deb "${DEB_PKG}"
       fi
     else
