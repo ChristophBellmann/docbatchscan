@@ -9,11 +9,18 @@ if [[ "${1:-}" == "--selfcheck" ]]; then
   shift
 fi
 
-OUTFILE=${1:-"scan_$(date +%Y%m%d_%H%M%S).pdf"}
+DEFAULT_OUTDIR="${HOME}/Dokumente/scans"
+if [[ $# -ge 1 ]]; then
+  OUTFILE="$1"
+else
+  OUTFILE="${DEFAULT_OUTDIR}/scan_$(date +%Y%m%d_%H%M%S).pdf"
+fi
 
 log() {
   printf '[%s] %s\n' "$(date +'%Y-%m-%d %H:%M:%S')" "$*"
 }
+
+mkdir -p "$(dirname "$OUTFILE")"
 
 if [[ -d /opt/Canon/lib/sane ]]; then
   LIBDIR=/opt/Canon/lib/sane

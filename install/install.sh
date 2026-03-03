@@ -99,5 +99,10 @@ fi
 # 2) docbatchscan-Script + Kurzalias installieren
 install -Dm755 "${PROJECT_ROOT}/docbatchscan.sh" "/usr/local/bin/docbatchscan"
 install -Dm755 "${PROJECT_ROOT}/scadn" "/usr/local/bin/scadn"
+install -Dm644 "${PROJECT_ROOT}/docbatchscan.desktop" "/usr/share/applications/docbatchscan.desktop"
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+  update-desktop-database /usr/share/applications >/dev/null 2>&1 || true
+fi
 
 echo "Fertig. Benutze 'docbatchscan' oder 'scadn' zum Scannen."

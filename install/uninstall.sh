@@ -12,6 +12,7 @@ fi
 echo "Entferne docbatchscan …"
 rm -f /usr/local/bin/docbatchscan || true
 rm -f /usr/local/bin/scadn || true
+rm -f /usr/share/applications/docbatchscan.desktop || true
 
 # Canon-Treiber entfernen (optional)
 if command -v dpkg >/dev/null 2>&1; then
@@ -42,6 +43,10 @@ rm -rf /opt/Canon || true
 # canondr-Eintrag aus dll.conf entfernen, falls vorhanden.
 if [[ -f /etc/sane.d/dll.conf ]]; then
   sed -i '/^[[:space:]]*canondr[[:space:]]*$/d' /etc/sane.d/dll.conf
+fi
+
+if command -v update-desktop-database >/dev/null 2>&1; then
+  update-desktop-database /usr/share/applications >/dev/null 2>&1 || true
 fi
 
 echo "Deinstallation abgeschlossen."
