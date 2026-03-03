@@ -21,6 +21,8 @@ Die Treiberdaten und Installationsccrips sind hier beinhaltet.
 ```bash
 ./docbatchscan.sh                  # erzeugt scan_YYYYMMDD_HHMMSS.pdf
 ./docbatchscan.sh mein_scan.pdf
+./docbatchscan.sh --selfcheck     # prüft Abhängigkeiten/Treiber ohne Scan
+./scadn mein_scan.pdf             # Kurzalias
 ```
 
 ## Beispielausgabe
@@ -33,7 +35,7 @@ Die Treiberdaten und Installationsccrips sind hier beinhaltet.
 
 ## Installation
 
-Das install-script richtet docbatchscan UND den Canon-Treiber (cndrvsane-drc225) ein.  
+Das install-script richtet docbatchscan (inkl. `scadn`-Alias) UND den Canon-Treiber (cndrvsane-drc225) ein.  
 Die Treiberinstallation (dpkg) erfordert sudo.
 
 ```bash
@@ -42,7 +44,7 @@ sudo install/install.sh
 
 ## Deinstallation
 
-Entfernt docbatchscan und – falls vorhanden – das Canon-Treiberpaket cndrvsane-drc225.  
+Entfernt docbatchscan/scadn und – falls vorhanden – das Canon-Treiberpaket cndrvsane-drc225.  
 Erfordert sudo.
 
 ```bash
@@ -118,6 +120,4 @@ env LD_LIBRARY_PATH=/opt/Canon/DRC225/lib/sane \
     SANE_CONFIG_DIR=/opt/Canon/DRC225/etc/sane.d:/etc/sane.d \
     scanimage --device canondr:libusb:X:Y ...
 ```
-
-
 

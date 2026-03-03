@@ -11,6 +11,7 @@ fi
 
 echo "Entferne docbatchscan …"
 rm -f /usr/local/bin/docbatchscan || true
+rm -f /usr/local/bin/scadn || true
 
 # Canon-Treiber entfernen (optional)
 if command -v dpkg >/dev/null 2>&1; then
@@ -25,4 +26,3 @@ else
 fi
 
 echo "Deinstallation abgeschlossen."
-
