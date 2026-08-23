@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Duplex color batch scan helper for Canon DR-C225, tuned for speed.
+# Duplex-Stapelscan für den Canon DR-C225: durchsuchbares PDF, sprechender Name.
 
 set -euo pipefail
 
