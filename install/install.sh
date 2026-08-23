@@ -99,7 +99,31 @@ fi
 # 2) docbatchscan-Script + Kurzalias installieren
 install -Dm755 "${PROJECT_ROOT}/docbatchscan.sh" "/usr/local/bin/docbatchscan"
 install -Dm755 "${PROJECT_ROOT}/scadn" "/usr/local/bin/scadn"
+install -Dm755 "${PROJECT_ROOT}/docbatchscan-gui" "/usr/local/bin/docbatchscan-gui"
 install -Dm644 "${PROJECT_ROOT}/docbatchscan.desktop" "/usr/share/applications/docbatchscan.desktop"
+
+# 3) Optionale Werkzeuge für OCR und Benennung.
+# Fehlen sie, laeuft der Scan trotzdem - nur ohne durchsuchbares PDF und
+# ohne sprechenden Dateinamen. Ein Fehlschlag darf die Installation nicht
+# abbrechen.
+if command -v apt-get >/dev/null 2>&1; then
+  MISSING_OPT=()
+  command -v ocrmypdf >/dev/null 2>&1 || MISSING_OPT+=(ocrmypdf)
+  if ! dpkg-query -W -f='${Status}' tesseract-ocr-deu 2>/dev/null | grep -q '^install ok installed$'; then
+    MISSING_OPT+=(tesseract-ocr-deu)
+  fi
+
+  if [[ ${#MISSING_OPT[@]} -gt 0 ]]; then
+    echo "Installiere optionale OCR-Werkzeuge: ${MISSING_OPT[*]} …"
+    apt-get install -y "${MISSING_OPT[@]}" \
+      || echo "WARNUNG: OCR-Werkzeuge nicht installiert - Scans bleiben ohne Textebene." >&2
+  fi
+fi
+
+if ! command -v opencode >/dev/null 2>&1; then
+  echo "Hinweis: 'opencode' nicht gefunden - Scans behalten ihren Zeitstempelnamen."
+  echo "         Siehe https://github.com/sst/opencode"
+fi
 
 if command -v update-desktop-database >/dev/null 2>&1; then
   update-desktop-database /usr/share/applications >/dev/null 2>&1 || true

@@ -12,6 +12,7 @@ fi
 echo "Entferne docbatchscan …"
 rm -f /usr/local/bin/docbatchscan || true
 rm -f /usr/local/bin/scadn || true
+rm -f /usr/local/bin/docbatchscan-gui || true
 rm -f /usr/share/applications/docbatchscan.desktop || true
 
 # Canon-Treiber entfernen (optional)

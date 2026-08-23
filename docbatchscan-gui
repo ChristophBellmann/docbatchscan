@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Starter für den Desktop-Eintrag.
+#
+# Vom Terminal aus legt docbatchscan im aktuellen Verzeichnis ab. Ein
+# Launcher hat kein sinnvolles Arbeitsverzeichnis — er startet im
+# Home-Ordner —, deshalb bekommt er hier ein festes Ziel.
+
+set -uo pipefail
+
+OUTDIR="${SCAN_OUTDIR:-${HOME}/Dokumente/scans}"
+mkdir -p "$OUTDIR"
+
+SCAN_OUTDIR="$OUTDIR" docbatchscan "$@"
+status=$?
+
+echo
+if [[ $status -eq 0 ]]; then
+  echo "Fertig. Ablage: $OUTDIR"
+else
+  echo "Abgebrochen (Status $status)."
+fi
+read -r -p "Enter zum Schließen …" _
+exit "$status"

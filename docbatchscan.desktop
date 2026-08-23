@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Dokument scannen
+GenericName=Duplex-Stapelscan
+Comment=Stapel beidseitig scannen, per OCR durchsuchbar machen und benennen
+Exec=docbatchscan-gui
+Terminal=true
+Icon=scanner
+Categories=Utility;Scanning;
+Keywords=Scan;Scanner;Duplex;OCR;PDF;Canon;
+StartupNotify=false

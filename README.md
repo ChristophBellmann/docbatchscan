@@ -32,6 +32,10 @@ geht er nie. Namenskollisionen bekommen `_2`, `_3`; überschrieben wird nichts.
 ./scadn mein_scan.pdf             # Kurzalias
 ```
 
+Aus dem Anwendungsmenü heraus gibt es zusätzlich **Dokument scannen**. Ein
+Launcher hat kein sinnvolles Arbeitsverzeichnis, deshalb legt er über
+`docbatchscan-gui` fest in `~/Dokumente/scans` ab.
+
 ## Beispielausgabe
 
 ```bash
