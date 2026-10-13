@@ -1,5 +1,7 @@
 # docbatchscan
 
+**Mehr:** [Alle REDesign-Handbücher](https://renewable-energy-design.gitbook.io/renewable-energy-design-docs/) · [redesign.network](https://redesign.network/)
+
 Ein schnelles, skriptbasiertes **Duplex-Color-Batch-Scan-Tool** für den Canon **DR-C225** unter Linux.  
 Optimiert für hohe Geschwindigkeit, nutzt `scanimage` + `img2pdf`.  
 Es ist für die Verwendung mit dem (alten) proprietäre Canon-Treiber vorgesehen.  
