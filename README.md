@@ -17,6 +17,7 @@ Die Treiberdaten und Installationsccrips sind hier beinhaltet.
 - Automatisches Aufräumen temporärer Dateien  
 - Optionaler Dateiname als Parameter, sonst Zeitstempel  
 - **Ablage im aktuellen Verzeichnis** — dort, wo der Aufruf erfolgt  
+- **Leerseiten fliegen raus** — leere Duplex-Rückseiten werden vor dem PDF verworfen  
 - **OCR** via `ocrmypdf`: durchsuchbares PDF, gedrehte Seiten werden aufgerichtet  
 - **Sprechender Dateiname** aus dem OCR-Text, per LLM: `YYYY-MM-DD_Absender_Betreff.pdf`  
 - Ausgabe: **PDF**
@@ -57,6 +58,8 @@ Alles über Umgebungsvariablen, nichts muss gesetzt werden:
 | Variable | Standard | Wirkung |
 |---|---|---|
 | `SCAN_OUTDIR` | `$PWD` | Zielverzeichnis |
+| `SCAN_SKIP_BLANK` | `1` | `0` behält auch leere Seiten |
+| `SCAN_BLANK_THRESHOLD` | `0.03` | Tintenanteil in Promille, darunter gilt eine Seite als leer |
 | `SCAN_OCR` | `1` | `0` überspringt `ocrmypdf` (spart ca. 4 s pro Seite) |
 | `SCAN_AUTONAME` | `1` | `0` behält den Zeitstempelnamen |
 | `SCAN_NAME_MODEL` | `opencode-go/glm-5.3` | Modell für die Benennung |
@@ -66,6 +69,17 @@ Alles über Umgebungsvariablen, nichts muss gesetzt werden:
 
 Wird ein Dateiname als Parameter übergeben, ist die automatische Benennung aus —
 ein ausdrücklich gewählter Name wird nicht überstimmt.
+
+## Wie Leerseiten erkannt werden
+
+Jede Seite wird in Graustufen auf 75 dpi verkleinert, die Ränder (Scannerschatten,
+Lochung) werden abgeschnitten, dann trennt ein lokales adaptives
+Schwellwertverfahren Schrift vom Papier. Gemessen wird der Anteil dunkler Pixel.
+Getöntes Papier, Staubkörner und durchscheinende Rückseiten liegen praktisch bei
+0 ‰, schon ein einzelnes kurzes Wort deutlich über der Schwelle. Die Schwelle ist
+bewusst niedrig: im Zweifel bleibt eine Seite drin. Wirken alle Seiten leer,
+wird nichts entfernt. Welche Seiten verworfen wurden, steht samt Messwert im Log.
+Ohne ImageMagick entfällt der Schritt.
 
 ## Wie die Benennung funktioniert
 
@@ -108,12 +122,13 @@ sudo install/uninstall.sh
 - Zwingend:
   - `scanimage`
   - `img2pdf`
-- Optional, für OCR und Benennung:
+- Optional, für Leerseiten, OCR und Benennung:
+  - ImageMagick (`convert` oder `magick`)
   - `ocrmypdf` samt `tesseract-ocr-deu`
   - [opencode](https://github.com/sst/opencode) mit einem konfigurierten Modell
 
 ```bash
-sudo apt install sane-utils img2pdf ocrmypdf tesseract-ocr-deu
+sudo apt install sane-utils img2pdf imagemagick ocrmypdf tesseract-ocr-deu
 ```
 
 Fehlt eines der optionalen Werkzeuge, wird der jeweilige Schritt übersprungen.

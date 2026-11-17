@@ -24,6 +24,9 @@ SCAN_OCR="${SCAN_OCR:-1}"
 SCAN_AUTONAME="${SCAN_AUTONAME:-1}"
 SCAN_NAME_MODEL="${SCAN_NAME_MODEL:-opencode-go/glm-5.3}"
 SCAN_OCR_LANG="${SCAN_OCR_LANG:-deu+eng}"
+# Leerseiten (meist Duplex-Rückseiten) verwerfen; Schwelle in Promille Tinte.
+SCAN_SKIP_BLANK="${SCAN_SKIP_BLANK:-1}"
+SCAN_BLANK_THRESHOLD="${SCAN_BLANK_THRESHOLD:-0.03}"
 
 log() {
   printf '[%s] %s\n' "$(date +'%Y-%m-%d %H:%M:%S')" "$*"
@@ -190,6 +193,46 @@ jpeg_files=("$WORKDIR"/page_*.jpg)
 if [ ! -e "${jpeg_files[0]}" ]; then
   log "Keine Seiten erfasst. Prüfe, ob Papier im Einzug liegt."
   exit 1
+fi
+
+# --- Leerseiten entfernen ---------------------------------------------------
+# Duplex liefert jede Rückseite mit. Gemessen wird der Anteil "Tinte" in
+# Promille: Graustufen, verkleinert auf 75 dpi, Ränder abgeschnitten (Schatten,
+# Lochung), dann lokales adaptives Schwellwertverfahren — so zählen weder
+# getöntes Papier noch durchscheinende Rückseiten. Im Zweifel bleibt die Seite.
+if [[ "$SCAN_SKIP_BLANK" == "1" ]]; then
+  IM_CMD=""
+  if command -v magick >/dev/null 2>&1; then
+    IM_CMD=magick
+  elif command -v convert >/dev/null 2>&1; then
+    IM_CMD=convert
+  fi
+
+  if [[ -z "$IM_CMD" ]]; then
+    log "ImageMagick fehlt, Leerseitenprüfung übersprungen."
+  else
+    kept=()
+    dropped=()
+    for page in "${jpeg_files[@]}"; do
+      ink="$("$IM_CMD" "$page" -colorspace Gray -resize 25% \
+               -gravity center -crop 84%x92%+0+0 +repage \
+               -blur 0x0.8 -lat 25x25-20% -negate \
+               -format '%[fx:mean*1000]' info: 2>/dev/null || true)"
+      if [[ -n "$ink" ]] && awk -v v="$ink" -v t="$SCAN_BLANK_THRESHOLD" \
+           'BEGIN { exit !(v + 0 < t + 0) }'; then
+        dropped+=("$(basename "$page") (${ink}‰)")
+      else
+        kept+=("$page")
+      fi
+    done
+
+    if [[ ${#kept[@]} -eq 0 ]]; then
+      log "Alle Seiten wirken leer — behalte sie trotzdem."
+    elif [[ ${#dropped[@]} -gt 0 ]]; then
+      log "Entferne ${#dropped[@]} Leerseite(n): ${dropped[*]}"
+      jpeg_files=("${kept[@]}")
+    fi
+  fi
 fi
 
 log "Erzeuge PDF ${OUTFILE}"

@@ -108,13 +108,15 @@ install -Dm644 "${PROJECT_ROOT}/docbatchscan.desktop" "/usr/share/applications/d
 # abbrechen.
 if command -v apt-get >/dev/null 2>&1; then
   MISSING_OPT=()
+  command -v convert >/dev/null 2>&1 || command -v magick >/dev/null 2>&1 \
+    || MISSING_OPT+=(imagemagick)
   command -v ocrmypdf >/dev/null 2>&1 || MISSING_OPT+=(ocrmypdf)
   if ! dpkg-query -W -f='${Status}' tesseract-ocr-deu 2>/dev/null | grep -q '^install ok installed$'; then
     MISSING_OPT+=(tesseract-ocr-deu)
   fi
 
   if [[ ${#MISSING_OPT[@]} -gt 0 ]]; then
-    echo "Installiere optionale OCR-Werkzeuge: ${MISSING_OPT[*]} …"
+    echo "Installiere optionale Werkzeuge (Leerseiten/OCR): ${MISSING_OPT[*]} …"
     apt-get install -y "${MISSING_OPT[@]}" \
       || echo "WARNUNG: OCR-Werkzeuge nicht installiert - Scans bleiben ohne Textebene." >&2
   fi
